@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ar.js Tutorial - AJAX without XML</title>
+    <script src="/js/ar.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        h1, h2, h3, h4 {
+            color: #3b82f6;
+        }
+        code, pre {
+            background: #f1f5f9;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        pre {
+            padding: 10px;
+            overflow-x: auto;
+        }
+        .container {
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        .alert {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            position: relative;
+        }
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+        .alert-danger {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+        #output {
+            min-height: 100px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ar.js Tutorial</h1>
+        <p><strong>Version:</strong> 2.0 | <strong>Updated:</strong> July 28, 2025, 03:30 AM EAT</p>
+        <p>Ar.js is a lightweight, dependency-free JavaScript library for making asynchronous HTTP requests (AJAX) without XML, supporting JSON, JSONP, HTML, and script loading. It’s designed for simplicity and flexibility, with a fluent API for chaining requests and modern features like Promise support and Fetch API integration.</p>
+
+        <h2>Table of Contents</h2>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#roadmap">Roadmap</a></li>
+            <li><a href="#architecture">Design Architecture</a></li>
+            <li><a href="#functionality">Functionality</a></li>
+            <li><a href="#usage">Usage Examples</a></li>
+            <li><a href="#integration">Integration with Apx PHP Framework</a></li>
+        </ul>
+
+        <h2 id="overview">Overview</h2>
+        <p>Ar.js (formerly Aja.js) is a minimal AJAX library for building dynamic web applications. It supports multiple request types (<code>html</code>, <code>json</code>, <code>jsonp</code>, <code>script</code>) and HTTP methods (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>, etc.), with features like CSRF token support, Promise-based APIs, and both XMLHttpRequest and Fetch API backends. It’s ideal for single-page applications (SPAs) and integrates seamlessly with frameworks like Apx PHP.</p>
+
+        <h2 id="roadmap">Roadmap</h2>
+        <p>The development roadmap for Ar.js focuses on enhancing usability and performance while keeping the library lightweight:</p>
+        <ul>
+            <li><strong>Version 2.1 (Q3 2025)</strong>: Add support for <code>multipart/form-data</code> uploads and progress events for file transfers.</li>
+            <li><strong>Version 2.2 (Q4 2025)</strong>: Introduce retry mechanisms for failed requests and caching for GET requests.</li>
+            <li><strong>Version 3.0 (2026)</strong>: Add WebSocket support and a plugin system for extending functionality.</li>
+            <li><strong>Long-Term</strong>: Optimize for server-side rendering (SSR) frameworks and provide TypeScript definitions.</li>
+        </ul>
+
+        <h2 id="architecture">Design Architecture</h2>
+        <p>Ar.js is built with a modular, chainable architecture:</p>
+        <ul>
+            <li><strong>Fluent API</strong>: Methods like <code>.url()</code>, <code>.method()</code>, and <code>.body()</code> chain to configure requests, culminating in <code>.go()</code> or <code>.fetch()</code>.</li>
+            <li><strong>Event System</strong>: Supports event handlers for <code>success</code>, <code>error</code>, <code>timeout</code>, and HTTP status codes (e.g., <code>200</code>, <code>4xx</code>).</li>
+            <li><strong>Request Handlers</strong>: Separate handlers for <code>json</code>, <code>html</code>, <code>jsonp</code>, and <code>script</code> requests, with dual XMLHttpRequest and Fetch API support.</li>
+            <li><strong>Validation</strong>: Robust validators ensure inputs (e.g., URLs, methods) are correct, throwing <code>TypeError</code> for invalid data.</li>
+            <li><strong>CSRF Protection</strong>: Integrates with backend frameworks like Apx by including CSRF tokens in non-GET requests.</li>
+        </ul>
+        <p>The architecture prioritizes simplicity, with no external dependencies and a single-file include (<code>ar.js</code>). It’s designed to be extensible, with future support for plugins planned.</p>
+
+        <h2 id="functionality">Functionality</h2>
+        <p>Ar.js provides the following core features:</p>
+        <ul>
+            <li><strong>Request Types</strong>: <code>html</code>, <code>json</code>, <code>jsonp</code>, <code>script</code>.</li>
+            <li><strong>HTTP Methods</strong>: <code>CONNECT</code>, <code>DELETE</code>, <code>GET</code>, <code>HEAD</code>, <code>OPTIONS</code>, <code>PATCH</code>, <code>POST</code>, <code>PUT</code>, <code>TRACE</code>.</li>
+            <li><strong>Fluent Chaining</strong>: Configure requests with methods like <code>.url()</code>, <code>.header()</code>, <code>.body()</code>, etc.</li>
+            <li><strong>Promise Support</strong>: All requests return Promises via <code>.go()</code> or <code>.fetch()</code>.</li>
+            <li><strong>Fetch API</strong>: Modern alternative to XMLHttpRequest with <code>.fetch()</code>.</li>
+            <li><strong>CSRF Tokens</strong>: Set via <code>.csrfToken()</code> for secure POST/PUT/DELETE requests.</li>
+            <li><strong>Event Handling</strong>: Bind callbacks to <code>success</code>, <code>error</code>, <code>timeout</code>, <code>progress</code>, and status codes.</li>
+            <li><strong>Data Handling</strong>: Supports <code>FormData</code>, JSON, and URL-encoded data.</li>
+            <li><strong>DOM Integration</strong>: Inject HTML responses into elements with <code>.into()</code>.</li>
+            <li><strong>JSONP Support</strong>: Cross-domain requests with customizable callback names.</li>
+        </ul>
+
+        <h2 id="usage">Usage Examples</h2>
+        <p>Below are interactive examples demonstrating Ar.js usage with the Apx PHP Framework. Ensure the Apx backend is running at <code>http://localhost:8001</code> with <code>test_apx.php</code>.</p>
+
+        <h3>Example 1: Fetch Users (GET Request)</h3>
+        <p>Fetches a list of users from <code>/api/users</code> using a stored token.</p>
+        <pre>
+ar()
+    .url('/api/users')
+    .header('Authorization', sessionStorage.getItem('token'))
+    .on('success', data => {
+        document.querySelector('#output').textContent = JSON.stringify(data, null, 2);
+    })
+    .on('error', err => {
+        document.querySelector('#output').textContent = 'Error: ' + err.message;
+    })
+    .fetch();
+        </pre>
+        <button class="btn" onclick="fetchUsers()">Fetch Users</button>
+
+        <h3>Example 2: Create User (POST Request with CSRF)</h3>
+        <p>Creates a new user by sending a POST request to <code>/api/users</code>.</p>
+        <pre>
+ar()
+    .method('post')
+    .url('/api/users')
+    .header('Authorization', sessionStorage.getItem('token'))
+    .csrfToken('<?php echo $config['app']['secret']; ?>')
+    .body({ username: 'testuser', password: 'test123', email: 'test@example.com', role: 'user' })
+    .on('success', data => {
+        document.querySelector('#output').textContent = 'User created: ' + JSON.stringify(data, null, 2);
+    })
+    .on('error', err => {
+        document.querySelector('#output').textContent = 'Error: ' + err.message;
+    })
+    .fetch();
+        </pre>
+        <button class="btn" onclick="createUser()">Create User</button>
+
+        <h3>Example 3: Load HTML Content</h3>
+        <p>Loads HTML content into a DOM element.</p>
+        <pre>
+ar()
+    .type('html')
+    .url('/api/webcli?command=help')
+    .into('#output')
+    .on('success', data => {
+        console.log('HTML loaded');
+    })
+    .on('error', err => {
+        document.querySelector('#output').textContent = 'Error: ' + err.message;
+    })
+    .go();
+        </pre>
+        <button class="btn" onclick="loadHtml()">Load HTML</button>
+
+        <div id="output"></div>
+
+        <h2 id="integration">Integration with Apx PHP Framework</h2>
+        <p>Ar.js integrates with the Apx PHP Framework for user management. The setup requires:</p>
+        <ul>
+            <li><strong>Backend</strong>: <code>test_apx.php</code> with SQLite database (<code>database_apx.db</code>).</li>
+            <li><strong>Frontend</strong>: <code>public/index.html</code> and <code>public/js/app.js</code> using Ar.js for AJAX requests.</li>
+            <li><strong>CSRF Protection</strong>: Use the <code>app.secret</code> from <code>config.php</code> for POST/PUT/DELETE requests.</li>
+        </ul>
+        <p><strong>Setup Steps:</strong></p>
+        <ol>
+            <li>Place <code>ar.js</code>, <code>index.html</code>, and <code>app.js</code> in <code>K:\##mint\www\@px\public\js\</code>.</li>
+            <li>Run <code>php -S localhost:8001 test_apx.php</code> in Laragon’s Terminal.</li>
+            <li>Access <code>http://localhost:8001/public/index.html</code> and log in with <code>admin/admin123</code>.</li>
+            <li>Use the interface to manage users or run WebCLI commands like <code>create_user john john123 john@example.com user</code>.</li>
+        </ol>
+
+        <h3>Sample Apx Integration Code</h3>
+        <p>Below is a snippet from <code>app.js</code> showing Ar.js usage with Apx:</p>
+        <pre>
+async function login() {
+    try {
+        const response = await ar()
+            .method('post')
+            .url('/api/login')
+            .csrfToken('<?php echo $config['app']['secret']; ?>')
+            .body({ username: 'admin', password: 'admin123' })
+            .fetch();
+        sessionStorage.setItem('token', response.token);
+        showFlash('Login successful', 'success');
+    } catch (e) {
+        showFlash('Login failed: ' + e.message, 'danger');
+    }
+}
+        </pre>
+
+        <h2>Conclusion</h2>
+        <p>Ar.js is a powerful, lightweight AJAX library for modern web applications. Its fluent API, Promise support, and integration with frameworks like Apx make it ideal for SPAs. Try the examples above and explore the <a href="https://github.com/johnmwirigimahugu/coox">GitHub repository</a> for more details.</p>
+    </div>
+
+    <script>
+        // Show flash messages
+        function showFlash(message, type) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = message;
+            document.body.appendChild(alert);
+            setTimeout(() => alert.remove(), 3000);
+        }
+
+        // Example 1: Fetch Users
+        function fetchUsers() {
+            ar()
+                .url('/api/users')
+                .header('Authorization', sessionStorage.getItem('token'))
+                .on('success', data => {
+                    document.querySelector('#output').textContent = JSON.stringify(data, null, 2);
+                    showFlash('Users fetched', 'success');
+                })
+                .on('error', err => {
+                    document.querySelector('#output').textContent = 'Error: ' + err.message;
+                    showFlash('Failed to fetch users', 'danger');
+                })
+                .fetch();
+        }
+
+        // Example 2: Create User
+        function createUser() {
+            ar()
+                .method('post')
+                .url('/api/users')
+                .header('Authorization', sessionStorage.getItem('token'))
+                .csrfToken('<?php echo $config['app']['secret']; ?>')
+                .body({ username: 'testuser', password: 'test123', email: 'test@example.com', role: 'user' })
+                .on('success', data => {
+                    document.querySelector('#output').textContent = 'User created: ' + JSON.stringify(data, null, 2);
+                    showFlash('User created', 'success');
+                })
+                .on('error', err => {
+                    document.querySelector('#output').textContent = 'Error: ' + err.message;
+                    showFlash('Failed to create user', 'danger');
+                })
+                .fetch();
+        }
+
+        // Example 3: Load HTML
+        function loadHtml() {
+            ar()
+                .type('html')
+                .url('/api/webcli?command=help')
+                .into('#output')
+                .on('success', data => {
+                    console.log('HTML loaded');
+                    showFlash('HTML loaded', 'success');
+                })
+                .on('error', err => {
+                    document.querySelector('#output').textContent = 'Error: ' + err.message;
+                    showFlash('Failed to load HTML', 'danger');
+                })
+                .go();
+        }
+    </script>
+</body>
+</html>
